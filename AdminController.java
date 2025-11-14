@@ -1,10 +1,6 @@
 package com.jtspringproject.JtSpringProject.controller;
-//Introduce errors to this file 
 
-
-//import java.sql.Connection;
-//sql
-
+import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -16,10 +12,10 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-//import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
-//import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
@@ -63,7 +59,7 @@ public class AdminController {
 	}
 	
 	@GetMapping( value={"/","Dashboard"})
-	public ModelAndView adminHome(Model model) //{
+	public ModelAndView adminHome(Model model) {
 		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 	    ModelAndView mv = new ModelAndView("adminHome");
 	    mv.addObject("admin", authentication.getName());
@@ -190,7 +186,8 @@ public class AdminController {
 	@GetMapping("profileDisplay")
 	public String profileDisplay(Model model) {
 		String displayusername,displaypassword,displayemail,displayaddress;
-		
+		try
+		{
 			Class.forName("com.mysql.jdbc.Driver");
 			Connection con = DriverManager.getConnection("jdbc:mysql://localhost:3306/ecommjava","root","");
 			PreparedStatement stmt = con.prepareStatement("select * from users where username = ?"+";");
@@ -214,7 +211,10 @@ public class AdminController {
 			model.addAttribute("address",displayaddress);
 			}
 		}
-		
+		catch(Exception e)
+		{
+			System.out.println("Exception:"+e);
+		}
 		System.out.println("Hello");
 		return "updateProfile";
 	}
@@ -223,8 +223,8 @@ public class AdminController {
 	public String updateUserProfile(@RequestParam("userid") int userid,@RequestParam("username") String username, @RequestParam("email") String email, @RequestParam("password") String password, @RequestParam("address") String address) 
 	
 	{
-		
-		
+		try
+		{
 			Class.forName("com.mysql.jdbc.Driver");
 			Connection con = DriverManager.getConnection("jdbc:mysql://localhost:3306/ecommjava","root","");
 			
@@ -234,7 +234,7 @@ public class AdminController {
 			pst.setString(3, password);
 			pst.setString(4, address);
 			pst.setInt(5, userid);
-			int i = pst.executeUpdate //error	
+			int i = pst.executeUpdate();	
 			
 			Authentication newAuthentication = new UsernamePasswordAuthenticationToken(
 		            username,
@@ -243,7 +243,10 @@ public class AdminController {
 
 		    SecurityContextHolder.getContext().setAuthentication(newAuthentication);
 		}
-		
+		catch(Exception e)
+		{
+			System.out.println("Exception:"+e);
+		}
 		return "redirect:index";
 	}
 
